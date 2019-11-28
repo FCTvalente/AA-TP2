@@ -12,7 +12,17 @@ import matplotlib.pyplot as plt
 
 def select_features(f_values, features):
     f_max = max(f_values)
-    res = features[:,f_values[:]>f_max * 0.6]
+    res = features[:,f_values[:]>f_max * 0.7]
+    return res
+
+def standardize(vec):
+    res = 0
+    for y in range(vec.shape[1]):
+        if y == 0:
+            res = (vec[:,y] - np.mean(vec[:,y], axis=0))/np.std(vec[:,y], axis=0)
+        else:
+            res = np.column_stack((res, (vec[:,y] - np.mean(vec[:,y], axis=0))/np.std(vec[:,y], axis=0)))
+        
     return res
 
 def ext_indexes(pred, true):
@@ -115,7 +125,7 @@ def label_dbscan(main_arg, range, precision, x, true_lbls):
         f_array.append(f)
     
     plt.figure()
-    plt.title('DBSCAN scores (center: {0:1.0f}; range: {1:1.0f}; precision: {2:1.0f})'.format(main_arg, range, precision))
+    plt.title('DBSCAN scores (center: {0:1.2f}; range: {1:1.2f}; precision: {2:1.2f})'.format(main_arg, range, precision))
     plt.plot(space, silh_array, label='Silhouette score')
     plt.plot(space, ari_array, label='Adjusted Rand score')
     plt.plot(space, prcsn_array, label='Precision score')
@@ -161,6 +171,7 @@ plt.show()
 plt.close()
 
 final_features = select_features(stacked_f, stacked_features)
+final_features = standardize(final_features)
 
 knn = KNeighborsClassifier(n_neighbors=4)
 knn.fit(final_features, data_labels[:, 0])
@@ -174,7 +185,7 @@ plt.plot(distances)
 plt.show()
 plt.close()
 
-dbscan_labels = label_dbscan(186, 10, 20, final_features, data_labels)
+dbscan_labels = label_dbscan(0.60, .4, 20, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels, 'teste_dbscan.html')
 
 kmeans_labels = label_kmeans(3, 2, final_features, data_labels)
