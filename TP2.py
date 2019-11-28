@@ -10,9 +10,27 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 import matplotlib.pyplot as plt
 
-def select_features(f_values, features):
+def select_features_MX(f_values, features, th):
     f_max = max(f_values)
-    res = features[:,f_values[:]>f_max * 0.7]
+    res = features[:,f_values[:]>f_max * th]
+    return res
+
+def select_features_NB(f_values, features, n):
+    selected = []
+    res = []
+    max = 0
+    for nx in range(n):
+        nmax = -1
+        max = 0
+        for ix in range(f_values.shape[0]):
+            if ix not in selected and f_values[ix] > max:
+                max = f_values[ix]
+                nmax = ix
+        selected.append(nmax)
+        if len(res) == 0:
+            res = features[:, nmax]
+        else:
+            res = np.column_stack((res, features[:, nmax]))
     return res
 
 def standardize(vec):
@@ -170,17 +188,17 @@ plt.legend()
 plt.show()
 plt.close()
 
-final_features = select_features(stacked_f, stacked_features)
+final_features = select_features_NB(stacked_f, stacked_features, 5)
 final_features = standardize(final_features)
 
-knn = KNeighborsClassifier(n_neighbors=4)
+knn = KNeighborsClassifier(n_neighbors=5)
 knn.fit(final_features, data_labels[:, 0])
 distances = knn.kneighbors()
-distances = np.sort(distances[0][:, 3])
+distances = np.sort(distances[0][:, -1])
 distances = distances[::-1]
 
 plt.figure()
-plt.title('Fourth-nearest distance per point')
+plt.title('Fifth-nearest distance per point')
 plt.plot(distances)
 plt.show()
 plt.close()
