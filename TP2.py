@@ -85,7 +85,7 @@ def label_kmeans(main_arg, reach, x, true_lbls):
     if main_arg - reach > 1:
         min = main_arg - reach
 
-    max = main_arg + reach + 1
+    max =  20
     space = range(min, max)
     for iarg in space:
         kmeans = KMeans(n_clusters=iarg)
