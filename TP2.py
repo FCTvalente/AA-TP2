@@ -5,7 +5,7 @@ from tp2_aux import images_as_matrix, report_clusters
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE, Isomap
 from sklearn.feature_selection import f_classif
-from sklearn.cluster import KMeans, DBSCAN
+from sklearn.cluster import KMeans, DBSCAN,AgglomerativeClustering
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 import matplotlib.pyplot as plt
@@ -156,6 +156,43 @@ def label_dbscan(main_arg, range, precision, x, true_lbls):
 
     return center_labels
 
+def label_thirdcluster_group(main_arg, x, true_lbls):
+    silh_array = []
+    ari_array = []
+    prcsn_array = []
+    rcl_array = []
+    rand_array = []
+    f_array = []
+    center_labels = None
+
+    space = ['ward', 'complete', 'average', 'single']
+    for iarg in space:
+        algorithm = AgglomerativeClustering(linkage = iarg, n_clusters = 3)
+        lbls = algorithm.fit_predict(x)
+        if iarg == main_arg:
+            center_labels = lbls
+            silh_array.append(silhouette_score(x, lbls))
+        ari_array.append(adjusted_rand_score(true_lbls[true_lbls[:,1]>0,1], lbls[true_lbls[:,1]>0]))
+        p, r, a, f = ext_indexes(lbls[true_lbls[:,1]>0], true_lbls[true_lbls[:,1]>0,1])
+        prcsn_array.append(p)
+        rcl_array.append(r)
+        rand_array.append(a)
+        f_array.append(f)
+    
+    plt.figure()
+    plt.title('Third scores (center: {0:1.0f}; range: {1:1.0f})'.format(2, 1))
+    #plt.plot(space, silh_array, label='Silhouette score')
+    plt.plot(space, ari_array, label='Adjusted Rand score')
+    plt.plot(space, prcsn_array, label='Precision score')
+    #plt.plot(space, rcl_array, label='Recall score')
+    #plt.plot(space, rand_array, label='Rand score')
+    plt.plot(space, f_array, label='F1 score')
+    plt.legend()
+    plt.show()
+    plt.close()
+
+    return center_labels
+
 try:
     data_res = np.load('feature_res.npz')
     #print('Leu')
@@ -208,7 +245,8 @@ report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), 
 
 kmeans_labels = label_kmeans(3, 2, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), kmeans_labels, 'teste_kmeans.html')
-
+third_labels =  label_thirdcluster_group('ward', final_features, data_labels)
+report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), third_labels, 'teste_third.html')
 
 #kmeans = KMeans(n_clusters=3)
 #kmeans_lbls = kmeans.fit_predict(final_features)
