@@ -85,7 +85,7 @@ def label_kmeans(main_arg, reach, x, true_lbls):
     if main_arg - reach > 1:
         min = main_arg - reach
 
-    max =  20
+    max = main_arg + reach + 1
     space = range(min, max)
     for iarg in space:
         kmeans = KMeans(n_clusters=iarg)
@@ -143,7 +143,7 @@ def label_dbscan(main_arg, range, precision, x, true_lbls):
         f_array.append(f)
     
     plt.figure()
-    plt.title('DBSCAN scores (center: {0:1.2f}; range: {1:1.2f}; precision: {2:1.2f})'.format(main_arg, range, precision))
+    plt.title('DBSCAN scores (center: {0:1.2f}; range: {1:1.2f}; precision: {2:1.0f})'.format(main_arg, range, precision))
     plt.plot(space, silh_array, label='Silhouette score')
     plt.plot(space, ari_array, label='Adjusted Rand score')
     plt.plot(space, prcsn_array, label='Precision score')
