@@ -171,7 +171,7 @@ def label_thirdcluster_group(main_arg, x, true_lbls):
         lbls = algorithm.fit_predict(x)
         if iarg == main_arg:
             center_labels = lbls
-            silh_array.append(silhouette_score(x, lbls))
+        silh_array.append(silhouette_score(x, lbls))
         ari_array.append(adjusted_rand_score(true_lbls[true_lbls[:,1]>0,1], lbls[true_lbls[:,1]>0]))
         p, r, a, f = ext_indexes(lbls[true_lbls[:,1]>0], true_lbls[true_lbls[:,1]>0,1])
         prcsn_array.append(p)
@@ -181,7 +181,7 @@ def label_thirdcluster_group(main_arg, x, true_lbls):
     
     plt.figure()
     plt.title('Third scores (center: {0:1.0f}; range: {1:1.0f})'.format(2, 1))
-    #plt.plot(space, silh_array, label='Silhouette score')
+    plt.plot(space, silh_array, label='Silhouette score')
     plt.plot(space, ari_array, label='Adjusted Rand score')
     plt.plot(space, prcsn_array, label='Precision score')
     #plt.plot(space, rcl_array, label='Recall score')
@@ -228,7 +228,7 @@ plt.close()
 final_features = select_features_NB(stacked_f, stacked_features, 5)
 final_features = standardize(final_features)
 
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(n_neighbors=5, weights='distance')
 knn.fit(final_features, data_labels[:, 0])
 distances = knn.kneighbors()
 distances = np.sort(distances[0][:, -1])
