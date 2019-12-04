@@ -39,10 +39,11 @@ Q6: Select some of the parameter values â€‹â€‹tested in question five 
 R6:
 
 Q7: Discuss advantages or problems with these two algorithms (K-Means and DBSCAN) for the purpose of helping biologists to organize these images, considering your theoretical knowledge of these algorithms as well as the results you obtained in your work.
-R7: 
+R7: The great advantage of DBSCAN is that it can identify noise points but the main issue is that you have to manually adjust the eps parameter without much automation which is harder than it should be. DBSCAN is also not that good at seperating the features into clusters with
+The K-Means is better at separating the clusters but it doesn't do anything to reduce noise and it has problems  seperating some sets. It is also dependent on the initial values for the first point of each cluster which makes it non deterministic
 
 Q8: Consider other clustering algorithms embedded in the Scikit-Learn library. Choose one and apply it to this problem, optimizing the parameters you deem appropriate in the way that you find adequate. Justify your choices and discuss whether this option would yield more useful results for biologists.
-R8:
+R8:We chose Agglomerative Clustering since it faired better than both our algorithms.
 
 Q9: (Optional) Implement the Bissecting K-Means hierarchical clustering algorithm as described in the assignment page and Lecture 19. Examine and discuss the results and their application to the problem of helping the biologists select and classify cell images.
 R9:

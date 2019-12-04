@@ -167,7 +167,7 @@ def label_thirdcluster_group(main_arg, x, true_lbls):
 
     space = ['ward', 'complete', 'average', 'single']
     for iarg in space:
-        algorithm = AgglomerativeClustering(linkage = iarg, n_clusters = 3)
+        algorithm = AgglomerativeClustering(linkage = iarg, n_clusters = 4)
         lbls = algorithm.fit_predict(x)
         if iarg == main_arg:
             center_labels = lbls
