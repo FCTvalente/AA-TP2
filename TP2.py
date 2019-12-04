@@ -197,43 +197,6 @@ def label_AC(main_arg, reach, x, true_lbls):
 
     return center_labels
 
-def label_thirdcluster_group(main_arg, x, true_lbls):
-    silh_array = []
-    ari_array = []
-    prcsn_array = []
-    rcl_array = []
-    rand_array = []
-    f_array = []
-    center_labels = None
-
-    space = ['ward', 'complete', 'average', 'single']
-    for iarg in space:
-        algorithm = AgglomerativeClustering(linkage = iarg, n_clusters = 4)
-        lbls = algorithm.fit_predict(x)
-        if iarg == main_arg:
-            center_labels = lbls
-        silh_array.append(silhouette_score(x, lbls))
-        ari_array.append(adjusted_rand_score(true_lbls[true_lbls[:,1]>0,1], lbls[true_lbls[:,1]>0]))
-        p, r, a, f = ext_indexes(lbls[true_lbls[:,1]>0], true_lbls[true_lbls[:,1]>0,1])
-        prcsn_array.append(p)
-        rcl_array.append(r)
-        rand_array.append(a)
-        f_array.append(f)
-    
-    plt.figure()
-    plt.title('Third scores (center: {0:1.0f}; range: {1:1.0f})'.format(2, 1))
-    plt.plot(space, silh_array, label='Silhouette score')
-    plt.plot(space, ari_array, label='Adjusted Rand score')
-    plt.plot(space, prcsn_array, label='Precision score')
-    plt.plot(space, rcl_array, label='Recall score')
-    plt.plot(space, rand_array, label='Rand score')
-    plt.plot(space, f_array, label='F1 score')
-    plt.legend()
-    plt.show()
-    plt.close()
-
-    return center_labels
-
 try:
     data_res = np.load('feature_res.npz')
     pca_data = data_res['pca_data']
@@ -284,9 +247,6 @@ report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), 
 
 kmeans_labels = label_kmeans(13, 10, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), kmeans_labels, 'teste_kmeans.html')
-
-#third_labels =  label_thirdcluster_group('ward', final_features, data_labels)
-#report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), third_labels, 'teste_third.html')
 
 AC_labels = label_AC(3, 20, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), AC_labels, 'teste_AC.html')
