@@ -62,8 +62,8 @@ def ext_indexes(pred, true):
 
     try:
         precision = tp / (tp + fp)
-        recall = tp / (tp / fn)
-        rand = (tp + tn) / n * (n - 1) / 2
+        recall = tp / (tp + fn)
+        rand = (tp + tn) / (n * (n - 1) / 2)
         f1 = 2 * precision * recall / (precision + recall)
     except ZeroDivisionError:
         precision = 0
@@ -85,7 +85,7 @@ def label_kmeans(main_arg, reach, x, true_lbls):
     if main_arg - reach > 1:
         min = main_arg - reach
 
-    max =  20
+    max = main_arg + reach + 1
     space = range(min, max)
     for iarg in space:
         kmeans = KMeans(n_clusters=iarg)
@@ -105,8 +105,8 @@ def label_kmeans(main_arg, reach, x, true_lbls):
     plt.plot(space, silh_array, label='Silhouette score')
     plt.plot(space, ari_array, label='Adjusted Rand score')
     plt.plot(space, prcsn_array, label='Precision score')
-    #plt.plot(space, rcl_array, label='Recall score')
-    #plt.plot(space, rand_array, label='Rand score')
+    plt.plot(space, rcl_array, label='Recall score')
+    plt.plot(space, rand_array, label='Rand score')
     plt.plot(space, f_array, label='F1 score')
     plt.legend()
     plt.show()
@@ -143,12 +143,53 @@ def label_dbscan(main_arg, range, precision, x, true_lbls):
         f_array.append(f)
     
     plt.figure()
-    plt.title('DBSCAN scores (center: {0:1.2f}; range: {1:1.2f}; precision: {2:1.2f})'.format(main_arg, range, precision))
+    plt.title('DBSCAN scores (center: {0:1.2f}; range: {1:1.2f}; precision: {2:1.0f})'.format(main_arg, range, precision))
     plt.plot(space, silh_array, label='Silhouette score')
     plt.plot(space, ari_array, label='Adjusted Rand score')
     plt.plot(space, prcsn_array, label='Precision score')
-    #plt.plot(space, rcl_array, label='Recall score')
-    #plt.plot(space, rand_array, label='Rand score')
+    plt.plot(space, rcl_array, label='Recall score')
+    plt.plot(space, rand_array, label='Rand score')
+    plt.plot(space, f_array, label='F1 score')
+    plt.legend()
+    plt.show()
+    plt.close()
+
+    return center_labels
+
+def label_AC(main_arg, reach, x, true_lbls):
+    silh_array = []
+    ari_array = []
+    prcsn_array = []
+    rcl_array = []
+    rand_array = []
+    f_array = []
+    center_labels = None
+    min = 2
+    if main_arg - reach > 1:
+        min = main_arg - reach
+
+    max = main_arg + reach + 1
+    space = range(min, max)
+    for iarg in space:
+        ac = AgglomerativeClustering(n_clusters=iarg)
+        lbls = ac.fit_predict(x)
+        if iarg == main_arg:
+            center_labels = lbls
+        silh_array.append(silhouette_score(x, lbls))
+        ari_array.append(adjusted_rand_score(true_lbls[true_lbls[:,1]>0,1], lbls[true_lbls[:,1]>0]))
+        p, r, a, f = ext_indexes(lbls[true_lbls[:,1]>0], true_lbls[true_lbls[:,1]>0,1])
+        prcsn_array.append(p)
+        rcl_array.append(r)
+        rand_array.append(a)
+        f_array.append(f)
+    
+    plt.figure()
+    plt.title('AgglemerativeClustering scores (center: {0:1.0f}; range: {1:1.0f})'.format(main_arg, reach))
+    plt.plot(space, silh_array, label='Silhouette score')
+    plt.plot(space, ari_array, label='Adjusted Rand score')
+    plt.plot(space, prcsn_array, label='Precision score')
+    plt.plot(space, rcl_array, label='Recall score')
+    plt.plot(space, rand_array, label='Rand score')
     plt.plot(space, f_array, label='F1 score')
     plt.legend()
     plt.show()
@@ -171,7 +212,7 @@ def label_thirdcluster_group(main_arg, x, true_lbls):
         lbls = algorithm.fit_predict(x)
         if iarg == main_arg:
             center_labels = lbls
-            silh_array.append(silhouette_score(x, lbls))
+        silh_array.append(silhouette_score(x, lbls))
         ari_array.append(adjusted_rand_score(true_lbls[true_lbls[:,1]>0,1], lbls[true_lbls[:,1]>0]))
         p, r, a, f = ext_indexes(lbls[true_lbls[:,1]>0], true_lbls[true_lbls[:,1]>0,1])
         prcsn_array.append(p)
@@ -181,11 +222,11 @@ def label_thirdcluster_group(main_arg, x, true_lbls):
     
     plt.figure()
     plt.title('Third scores (center: {0:1.0f}; range: {1:1.0f})'.format(2, 1))
-    #plt.plot(space, silh_array, label='Silhouette score')
+    plt.plot(space, silh_array, label='Silhouette score')
     plt.plot(space, ari_array, label='Adjusted Rand score')
     plt.plot(space, prcsn_array, label='Precision score')
-    #plt.plot(space, rcl_array, label='Recall score')
-    #plt.plot(space, rand_array, label='Rand score')
+    plt.plot(space, rcl_array, label='Recall score')
+    plt.plot(space, rand_array, label='Rand score')
     plt.plot(space, f_array, label='F1 score')
     plt.legend()
     plt.show()
@@ -195,13 +236,11 @@ def label_thirdcluster_group(main_arg, x, true_lbls):
 
 try:
     data_res = np.load('feature_res.npz')
-    #print('Leu')
     pca_data = data_res['pca_data']
     tsne_data = data_res['tsne_data']
     iso_data = data_res['iso_data']
 except IOError:
     data = images_as_matrix()
-    #print('Nao leu')
     pca = PCA(n_components=6)
     pca_data = pca.fit_transform(data)
 
@@ -228,7 +267,7 @@ plt.close()
 final_features = select_features_NB(stacked_f, stacked_features, 5)
 final_features = standardize(final_features)
 
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(n_neighbors=4, weights='distance')
 knn.fit(final_features, data_labels[:, 0])
 distances = knn.kneighbors()
 distances = np.sort(distances[0][:, -1])
@@ -240,26 +279,14 @@ plt.plot(distances)
 plt.show()
 plt.close()
 
-dbscan_labels = label_dbscan(0.60, .4, 20, final_features, data_labels)
+dbscan_labels = label_dbscan(0.5, .4, 20, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels, 'teste_dbscan.html')
 
-kmeans_labels = label_kmeans(3, 2, final_features, data_labels)
+kmeans_labels = label_kmeans(13, 10, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), kmeans_labels, 'teste_kmeans.html')
-third_labels =  label_thirdcluster_group('ward', final_features, data_labels)
-report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), third_labels, 'teste_third.html')
 
-#kmeans = KMeans(n_clusters=3)
-#kmeans_lbls = kmeans.fit_predict(final_features)
-#report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), kmeans_lbls, 'teste_kmeans.html')
+#third_labels =  label_thirdcluster_group('ward', final_features, data_labels)
+#report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), third_labels, 'teste_third.html')
 
-#print(silhouette_score(final_features, dbscan_lbls))
-#print(adjusted_rand_score(data_labels[data_labels[:,1]>0,1], dbscan_lbls[data_labels[:,1]>0]))
-#
-#print(silhouette_score(final_features, kmeans_lbls))
-#print(adjusted_rand_score(data_labels[data_labels[:,1]>0,1], kmeans_lbls[data_labels[:,1]>0]))
-
-#labeled = data_labels[data_labels[:,1]>0,:]
-#print(pca_data[data_labels[:,1]>0,:])
-#pca_f, pca_prob = f_classif(pca_data[data_labels[:,1]>0,:], data_labels[data_labels[:,1]>0,1])
-#tsne_f, tsne_prob = f_classif(tsne_data[data_labels[:,1]>0,:], data_labels[data_labels[:,1]>0,1])
-#iso_f, iso_prob = f_classif(iso_data[data_labels[:,1]>0,:], data_labels[data_labels[:,1]>0,1])
+AC_labels = label_AC(3, 20, final_features, data_labels)
+report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), AC_labels, 'teste_AC.html')
