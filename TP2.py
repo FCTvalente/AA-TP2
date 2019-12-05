@@ -253,9 +253,3 @@ report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), 
 
 AC_labels = label_AC(3, 40, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), AC_labels, 'teste_AC.html')
-
-
-dbscan_labels1 = label_dbscan(.6, .01, 1, final_features, data_labels)
-report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels1, 'teste_dbscan1.html')
-dbscan_labels2 = label_dbscan(.9, .01, 1, final_features, data_labels)
-report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels2, 'teste_dbscan2.html')
