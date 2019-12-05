@@ -109,6 +109,7 @@ def label_kmeans(main_arg, reach, x, true_lbls):
     plt.plot(space, rand_array, label='Rand score')
     plt.plot(space, f_array, label='F1 score')
     plt.legend()
+    plt.savefig('KMeans-plot',dpi=300,bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -151,6 +152,7 @@ def label_dbscan(main_arg, range, precision, x, true_lbls):
     plt.plot(space, rand_array, label='Rand score')
     plt.plot(space, f_array, label='F1 score')
     plt.legend()
+    plt.savefig('DBSCAN-plot',dpi=300,bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -192,6 +194,7 @@ def label_AC(main_arg, reach, x, true_lbls):
     plt.plot(space, rand_array, label='Rand score')
     plt.plot(space, f_array, label='F1 score')
     plt.legend()
+    plt.savefig('AgglomerativeClustering-plot',dpi=300,bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -242,11 +245,17 @@ plt.plot(distances)
 plt.show()
 plt.close()
 
-dbscan_labels = label_dbscan(0.5, .4, 20, final_features, data_labels)
+dbscan_labels = label_dbscan(.73, .35, 40, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels, 'teste_dbscan.html')
 
-kmeans_labels = label_kmeans(13, 10, final_features, data_labels)
+kmeans_labels = label_kmeans(13, 17, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), kmeans_labels, 'teste_kmeans.html')
 
-AC_labels = label_AC(3, 20, final_features, data_labels)
+AC_labels = label_AC(3, 40, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), AC_labels, 'teste_AC.html')
+
+
+dbscan_labels1 = label_dbscan(.6, .01, 1, final_features, data_labels)
+report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels1, 'teste_dbscan1.html')
+dbscan_labels2 = label_dbscan(.9, .01, 1, final_features, data_labels)
+report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), dbscan_labels2, 'teste_dbscan2.html')
