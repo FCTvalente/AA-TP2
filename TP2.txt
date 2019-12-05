@@ -33,22 +33,29 @@ items from a set with a large amount of features while using such a small portio
 
 
 Q5: Describe your analysis of the k (for K-Means) and epsilon (for DBSCAN) parameters using the internal and external indicators referred in the assignment page. Include the two plots of the indicator values â€‹â€‹(indicating the image name of each plot in one line in your answer) as a function of the k and epsilon parameters and explain how you chose the ranges for examining these parameters. Indicate, with justification, what conclusions you can draw from this analysis.
-R5: Due to K-Means' non-deterministic nature, while incrementing k the predictions and therefor the scores become more and more unstable and irregular, because of this we decided
+R5: Due to K-Means' non-deterministic nature, while incrementing k the predictions and therefore the scores become more and more unstable and irregular, because of this we decided
 to make k vary between 2 and 30. In our analysis, we've found that the silhouette and rand scores remian mostly constant for all k values, precision increases with k while all remaining
 other remaining scores decrease, this is because k is the number of predicted clusters, more clusters, which means it's less likely for for images of a different group to be in the same cluster,
 however the clusters will become smaller, so images from the same group will be scattered across many different clusters. 
+This behaviour can be explaine by the fact that the closser to the elbow the epsilon gets the less points of the same group are classified as such. However more points of different groups are clustered in different clusters.
 
+In the case of DBSCAN we varied the values of epsilon from 0.4 to 1.1. With this variation the Silhoute score would always increase with epsilon since the number of groups is smaller. All others beside the Recall Score and the F1 would increase with with the epsilon until it got closer to elbow and would decrease afterwards. The Recall Score is the exact oposit decreasing while getting closer to the elbow and increasing afterwards. The f1 score showed very little variation being based of precisin and recall that vary in opposite ways.
 K-Means: "KMeans-plot.png" | DBSCAN: "DBSCAN-plot.png"
 
 Q6: Select some of the parameter values â€‹â€‹tested in question five and examine the corresponding clusters more closely, generating the HTML file with the images. Explain how you selected these parameter values, discuss the different options and propose a recommendation that could help the biologists' task of classifying cells and rejecting segmentation errors.
-R6:
+R6: Selecting K = 13 for Kmeans. Because it was the value that made sure that most of the images had the same label as the other images in the same cluster while minimizing the number of clusters.
+For DBScan we selected approximately 0.73 since it the closest to the actual elbow minimizing the amount of noise present in the clusters. But even this value isn't suitable classifying as noise a great many points and the majority of points are within a single cluster.
+For the bioligist we suggest using the Kmeans algoritm or another, better algorithm, since DBSCAN does not fair particularly well clustering the data. Also considering that the Kmeans will produce more clusters than the number of groups we urge them to group various clusters in a way that will compile the points of the same label in a group of clusters.
+For other parameters to note for the Kmeans would be: 3 or 4 clusters because it would try to have a cluster for each group (3 with noise, 4 without), however this results wouldn't classify correctly the points, grouping a considerable amout of points is the wrong cluster. 
 
 Q7: Discuss advantages or problems with these two algorithms (K-Means and DBSCAN) for the purpose of helping biologists to organize these images, considering your theoretical knowledge of these algorithms as well as the results you obtained in your work.
-R7: The great advantage of DBSCAN is that it can identify noise points but the main issue is that you have to manually adjust the eps parameter without much automation which is harder than it should be. DBSCAN is also not that good at seperating the features into clusters with
-The K-Means is better at separating the clusters but it doesn't do anything to reduce noise and it has problems  seperating some sets. It is also dependent on the initial values for the first point of each cluster which makes it non deterministic
+R7: The great advantage of DBSCAN is that it can identify noise points but the main issue is that you have to manually adjust the eps parameter without much automation which is harder than it should be. DBSCAN is also not that good at seperating the features into clusters with our current data set.
+The K-Means is better at separating the clusters but it doesn't do anything to reduce noise and it has problems  separating some sets. It is also dependent on the initial values for the first point of each cluster which makes it non deterministic
 
 Q8: Consider other clustering algorithms embedded in the Scikit-Learn library. Choose one and apply it to this problem, optimizing the parameters you deem appropriate in the way that you find adequate. Justify your choices and discuss whether this option would yield more useful results for biologists.
-R8:We chose Agglomerative Clustering since it faired better than both our algorithms.
+R8: We chose Agglomerative Clustering since it obtains results comparable with K-means but since it is deterministic the results are more stable and won't change every time we run the algorithm. This would be beneficial for biologist since they wouldn't have to rely on luck to get good clusters.
+For a better view of the results we ploted the scores for a variety of numbers of clusters.
+ AgglomerativeClustering-plot.png
 
 Q9: (Optional) Implement the Bissecting K-Means hierarchical clustering algorithm as described in the assignment page and Lecture 19. Examine and discuss the results and their application to the problem of helping the biologists select and classify cell images.
 R9:
