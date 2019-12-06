@@ -251,5 +251,5 @@ report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), 
 kmeans_labels = label_kmeans(13, 17, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), kmeans_labels, 'teste_kmeans.html')
 
-AC_labels = label_AC(3, 40, final_features, data_labels)
+AC_labels = label_AC(23, 20, final_features, data_labels)
 report_clusters(np.linspace(0, data_labels.shape[0] - 1, data_labels.shape[0]), AC_labels, 'teste_AC.html')
